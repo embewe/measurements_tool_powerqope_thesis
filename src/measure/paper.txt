@@ -1,0 +1,293 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+\usepackage[a4paper,bindingoffset=0.2in,%
+%left=1in,right=1in,top=1in,bottom=1in,%
+footskip=.25in]{geometry}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{csquotes}
+\usepackage[ruled]{algorithm2e}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\setcounter{MaxMatrixCols}{20}
+\graphicspath{ {images/} }
+\usepackage[export]{adjustbox}
+\usepackage{tabulary}
+\usepackage[normalem]{ulem}
+\usepackage{flushend}
+\urlstyle{rm}
+\usepackage[all]{hypcap}
+\hypersetup{
+	%    backref=true
+	bookmarksnumbered,
+	pdfstartview={FitH},
+	citecolor={blue},
+	linkcolor={blue},
+	urlcolor={blue},
+	pdfpagemode={UseOutlines}
+}
+\ifx\commentsoff\undefined
+\newcommand\josiah[1]{\textbf{\textcolor{red}{JC: #1}}}
+\newcommand\enock[1]{\textbf{\textcolor{blue}{ET: #1}}}
+\else
+\newcommand\josiah[1]{}
+\newcommand\enock[1]{}
+\fi
+%
+
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Towards a Cost-aware Quality of DNS Security Service: Analysing QoE Impact of DoT and DoH-based filtering}% an abbcacrereviated paper title here
+%
+\author{First Author\inst{1} \and Second Author\inst{1}}
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+%\institute{Princeton University, Princeton NJ 08544, USA \and
+%Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+%\email{lncs@springer.com}\\
+%\url{http://www.springer.com/gp/computer-science/lncs} \and
+%ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+%\email{\{abc,lncs\}@uni-heidelberg.de}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+The current implementation of Internet Security services leaves users, especially those with limited computing skills, out of the security decision-making process. This is because security configuration parameters are often either hidden from the user or the security decisions are centralised by Internet Service Providers (ISPs). As a result, many users do not configure the required level of Internet security to meet the required level of protection. This lack of sufficient security configuration provides a fertile environment for Internet attacks. In the cases where the ISPs implement security services, the user is not provided with the associated cost information, such as privacy leakage or performance degradation. Such information would enable the user to make an informed decision on the right level of security configuration to enjoy a good Internet browsing experience.  The Internet Engineering Task Force (IETF) recommends that the user should be involved in security and privacy decisions. The challenge, however is that the configuration of DNS security protocols just like any other Internet security protocol is not suited for average Internet users who make up the majority of the Internet userbase. This study forms a basis for a cost-aware Quality of Internet security service configuration framework which will allow users, especially those with limited computing skills, to easily configure their desired level of Internet security based informed by the cost of the chosen security settings. In this paper, we analyse the impact of regular DNS, DoH and DoT-based filtering on Quality of Experience. We conduct measurements against five open public DNS service providers that provide DoE and DoE-based filtering. We conduct our measurements from 14 vantage points located in seven African countries. Our results show marginal performance differences on filters from the same provider. However, we observe huge differences in performance on filters from different providers. 
+
+\keywords{Networks \and Network performance \and security \and privacy \and QoE \and QoP}
+\end{abstract}
+%
+%
+%
+\section{Introduction}
+
+Domain Name System (DNS)\cite{DNS} is one of the fundamental components of the Internet which maps the human-readable names to their respective IP addresses of Internet resources. For most of the Internet's history, these services have been delivered in plaintext providing a fertile ground for attackers to exploit this vulnerability and compromise Internet users' security and privacy online. As a result, various efforts have been developed to encrypt cryptographically sign the DNS queries. These efforts have resulted in the development of different protocols such as DNS over TLS (DoT) \cite{DoT}, DNS over DTLS, DNS over QUIC, DNS over HTTPS (DoH)\cite{DoH}, DNSCrypt \cite{DNSCrypt} and DNSCurve \cite{DNSCurve}. DNS security is taking shape and has become the centre of discussions in the industry and research community. DNS over HTTPS (DoH) and DNS over TLS (DoT) are the two standard protocols which are gaining the ground amongst Internet measurements enthusiasts. Both these protocols encrypt DNS traffic to improve privacy of Internet users. Our study, therefore, focuses on these two protocols as measured from Internet user's networks and devices.     
+
+Recent studies \cite{DoTandDoH,DoE} have reported that compared to regular, unencrypted DNS, transmitting encrypted DNS queries brings several milliseconds of extra query latency. Measuring the extent to which these DNS security protocols impact performance and Quality of Experience is essential to inform the areas that require optimisation in these protocols. Moreso, measuring new protocols under different networks conditions ensures that the protocols are optimised for any kind of network. This is particularly important for the universal adoption of the protocols. 
+
+DNS-based filtering is one of the add-on services which Internet Service Providers (ISPs) have been offering to, among other things, their subscribers to protect them from malware, adware, phishing, cyberbullying and pornography. However, RFC 7258 \cite{rfc7258} clasifies such filtering mechanisms as pervasive monitoring. This leaves the ISPs in dilema since, apart from protecting their clients, they protect their infrastructure as well. This has led to resistance by ISPs from adopting DoH which sends DNS transactions over HTTP traffic. Fortunately enough, some open public DNS providers have filtering services on their DoE servers. he Internet research community has tried and continues to measure the impact of DNS security protocols QoE. However, little is known about the impact of DoE-based filtering services on Quality of Experience. Analysis of the ensuing performance impact of such protocols and their filtering services would be important to both ISPs and the end-users. 
+
+This paper presents the results of DNS security measurement study taken from 14 vantage points located in 7 African countries: Malawi, Zambia, South Africa, Kenya, Nigeria, Uganda and Madagascar. We conduct the measurements on end-user's devices against 14 resolvers from Cloudflare (standard, security and family), Quad9 (standard, security, security edns), Cleanbrowsing (standard,security and family), AdGuard (standard and family) and SecureDNS (standard and adblock). Security filters block malicious domains (phishing, malware). The family filter-enabled resolver blocks access to all adult, pornographic and explicit sites. It also blocks proxy and VPN domains that are used to bypass the filters. Mixed content sites (like Reddit) are also blocked. Search engines such as Google, Bing and Youtube are set to the Safe Mode. Malicious and Phishing domains are blocked. \footnote{See: https://cleanbrowsing.org/filters} Adult filter-enabled resolver blocks access to all adult, pornographic and explicit sites. It does not block proxy or VPNs, nor mixed-content sites. Search engines such as Google and Bing are set to the Safe Mode. Malicious and Phishing domains are blocked. Adblock, as the name suggests, blocks all kinds of ads including images and videos. We perform these measurements under different networks such as mobile (3G, 4G),  campus (Wired and Eduroam) networks and a community wireless network. We compare the DNS response time and page load time when different filters are configured. On each recursive resolver, we measure performace of both filtered and non-filtered configurations on the three protocols; regular DNS (Do53), DoT and DoH.  We further measure the performance of the local recursive resolver's non-filtered Do53 to serve as a baseline. We also measure how the choice of these filters would impact the number of pages that load successifully.
+
+\textbf{Findings:} 
+
+\textbf{Contributions}
+The contributions of this study are as follows:
+\begin{itemize}
+\item{\textit{DoE-based filtering measurements results from access networks in Africa.}}
+We conduct a larger scale internet measurements from Africa. The results from this measurements can inform the Internet community on the best filter to use and from which DNS provider depending on their geolocation and the network conditions. This contribution can be two-fold:  The ISPs can learn from the performance of these open public resolvers and implement their own local, filter-enabled DoE infrastructure which would reduce latency to the DoE servers. This would lead to lower DNS response times and page load times. These metrics determine the level of Quality of Experience. We further argue that, if users are provided with QoE costing information about DNS security protocols and their associated add-on services, they will make rational Internet security choices, which, in turn, will lead to increased adoption of DNS DoE and improved Quality of Protection and Experence.
+
+\item \textit{Observations.}
+Using the dataset collected from different countries under different network conditions, we compare the performance of DNS providers and DNS protocols. We then provide insights into potential best DoE implementation in for ISPs and users in different countries.
+	
+\end{itemize}
+
+
+\section{Methodology}
+
+In this section, we explain metrics we measure and how we measure each metric and our experiment setup. 
+\subsection{Metrics}
+This study aimed to understand how Do53, DoT and DoH impact browsing Quality of Experience (QoE). The study considered network-level and browser-level metrics. These metrics are latency, DNS response time (in this paper referred to as DRT), DNS success and failure rates and page load time (PLT). 
+
+\subsubsection{Latency}
+Several studies have pointed out that African networks suffer higher latencies. Recent studies \cite{chavula2, Chavula18, Fanou18} have attributed these latencies to suboptimal routing, lack of peering and cache sharing. Other studies have attributed these latencies to offshore hosting and misconfiguration of DNS. However, none of these works measures security impact on QoE as a result of these high latencies. Latency determines the kind of applications to run on affected networks. For example, it is recommended that VoIP and video conferencing may allow latency of not more than $400$ms, gaming $200$ms and latency of not more than $4$s is recommended for web browsing. Therefore, it is important to understand the extent to which the secure DNS protocols adds on to the already prevalent latency to ably inform Internet users of what applications might run without being much affected. Also, it is important to show which public DNS providers resolve with reasonable latency to aid users in the choice of DNS recursive resolvers. We also perform latency measurements to resolvers and websites to aid in explaining the source of latency in our results. We deem these latency measurements important since sometimes the recursive resolver can refer a resolution request to an offshore server and hence increasing the DNS response time. We conduct ping measurements to each of the recursors and domains under different DNS configurations. We then calculate the median RTT for each stored latency measurement.
+
+\subsubsection{DNS Resolution Time}
+DNS query response time is one of the major factors that affect the speed of page rendering in the browser. A web page normally contains several objects fetched from different servers. In this study, we measured DNS resolution time firstly for the main page, and thereafter, for each domain, we collected all the unique domains for components (i.e. images, JavaScript, CSS etc) and measured their respective DNS Response time. We use \textit{getdns} and \textit{libcurl} C libraries to issue Do53, DoT, and DoH queries. \textit{Getdns} provides an API that allows developers to perform DNS Do53 and DoT requests using different programming languages. Libcurl supports POST requests to be sent via HTTPS. This capability enables us to measure DoH DNS response time. We are aware that we could get DNS response times from the collected HARs, however, we noted that some of the timings were not correct and hence the usage of the \textit{getdns}. It is important to note that the DNS responses were not cached by the browser used in the measurements to make sure that the subsequent transaction is not affected by the cache.
+
+\subsubsection{DNS-related failure rates}
+Failures within DNS can have a dramatic impact on the wider Internet, most notably preventing access to any services dependent on domain names (e.g. web, mobile apps) \cite{DNSFailures}.  Recent studies on Do53, DoT and DoH have found that encrypted queries tend to fail more than the regular DNS. Hounsel et al \cite{DoTandDoH} found that in lossier conditions such as 3G, DoH experiences higher failure rates compared with Do53. This work seeks to establish DNS failure rates from real 3G and 4G conditions. We argue that understanding the prevalence of errors resulting from a particular DNS protocol is essential in informing the users which DNS protocols given their network conditions.
+
+\subsubsection{Page Load Time}
+Page load time is an important metric of browser-based QoE. It represents the amount of time a user has to wait before the page is loaded in a browser. In this study, Firefox was used in headless mode to visit a set of HTTPS-enabled websites. For each website, we collect HAR files in JSON format containing timing information, including blocking information, proxy negotiation, DNS lookup, TCP handshake, SSL, Requests, Waiting and Content download. From the HAR files, we record the \textit{onLoad} timing - the time taken to completely load the page together with its components. 
+
+\subsection{Experiment setup}
+
+We begin by describing how we collected the dataset which we analyse in this study. The study uses Alexa top 50 global websites for African countries \footnote{https://www.alexa.com/topsites/countries}  and top 50 Alexa local websites \footnote{https://www.alexa.com/topsites/category/Top/Regional/Africa} for each African country (hosted locally or operated by local entities). The local websites were particularly included to represent the websites serving African content and observe how exactly how DoT and DoH impact the browsing QoE on the least famous websites. These websites normally are not heavily cached in different public DNS recursive resolvers. We managed to get 2294 unique websites altogether. We then used  \textit{pshtt} modules of domain-scanner \footnote{https://github.com/18F/domain-scan} application to find the websites that were online and responsive on port 443. This process gave us 1583 websites.
+
+We then used MaxMind and managed to geolocate 1206 websites. Of the 1206 websites, we found that $55.7\%$ of the websites are hosted in North America, $27.6\%$ in Europe, $14.4\%$ in Africa, $1.7\%$ in Asia, $0,5\%$ in Oceania and $0.1\%$ in South America. We then selected the first three continents which served the most websites in our dataset. We randomly selected an equal number (173) of websites from America and Europe datasets. The 173 value came from the lowest number of websites in the selected continents, which is Africa in our case. This gave us 519 websites which we use in this study. We did this to have a common denominator for on which to base our results and discussion. For each of these continents, we looked at the common TLS protocols negotiated. We found that America had the highest number of websites that negotiated TLS1.3 ($84\%$) and the remaining $16\%$ negotiated TLS1.2. Africa had $84\%$ TLS1.2, $15\%$ TLS1.3 and $1\%$ TLS1.0 while Europe had $87\%$ TLS1.2, $12\%$ TLS1.3 and $1\%$ TLS1.0.
+
+To replicate web browser actions when a user visits a website, we follow a methodology used in a study by Hounsel \textit{et al.}. We use automated Firefox 67.0.1 to randomly visit the websites in our list in headless mode. This is a clean instance without any ad or pop-up blockers. We, however, install a plugin to export HTTP Archive objects (HARs) from each visited website. We store these HARs in a PostgreSQL database as JSON objects. The study also aimed at measuring how the selection of DNS recursive resolver and DNS transport affect browser performance which, in turn, affects user's QoE. As such, we use 5 DNS recursive resolvers each offering Do53, DoH and DoT. Additionally, we used default Do53 at each vantage point. It is important to note that the default resolvers only support Do53 and this serves as a baseline for the performance over Do53. Table \ref{tab:resolvers} lists resolvers used in this study. Of the  five resolvers, three (Google, Cloudflare and Quad9) negotiated TLS1.3 while CleanBrowsing and AdGuard negotiate TLS1.2
+
+Firefox web browser natively supports Do53 and DoH. On the other hand, DoT has to be configured on the user's machine outside of the browser. As such,  we use Stubby for DoT resolution, a stub resolver based on the getdns library. Stubby listens on a loopback address and responds to for Do53 queries. All DNS queries received by Stubby are then sent out to a configured recursor over DoT. We modify /etc/resolv.conf on our measurement systems to point to the loopback address served by Stubby. This forces all DNS queries initiated by Firefox to be sent over DoT. 
+
+Between the measurements, we were not able to control the caches of the recursive resolvers. We, therefore, randomised the order of arguments which were presented to the browser in form of a tuple comprising of websites, DNS recursive resolvers and  DNS protocols. This was done to avoid biasing results due to network quiet and busy times, as well as the potential effect of a query warming the recursor’s cache for subsequent queries from the other protocols tested.
+
+
+\begin{table*}
+	\centering
+	\label{tab:resolvers}
+	\begin{tabular}{|l|l|l|l|}
+		\toprule
+		\textbf{Configuration} & \textbf{Do53/DoT IP} & \textbf{DoH URI} & \textbf{Marker}\\
+		\midrule
+		Default Do53            & None              & None                                              & Local \\
+		AdGuard standard        & 176.103.130.136   & https://dns-unfiltered.adguard.com/dns-query      & ADS \\
+		AdGuard adblock         & 176.103.130.131   & https://dns-family.adguard.com/dns-query          & ADA \\
+		AdGuard family          & 176.103.130.132   & https://dns-family.adguard.com/dns-query          & ADF \\
+		CleanBrowsing adult     & 185.228.168.10    & https://doh.cleanbrowsing.org/doh/adult-filter    & CBA \\
+		CleanBrowsing security  & 185.228.168.168   & https://doh.cleanbrowsing.org/doh/security-filter & CBSec \\
+		CleanBrowsing Family    & 185.228.168.9     & https://doh.cleanbrowsing.org/doh/family-filter   & CBF \\
+		Cloudflare standard     & 1.1.1.1           & https://cloudflare-dns.com/dns-query              & CFS \\
+		Cloudflare security     & 1.1.1.2           & https://security.cloudflare-dns.com/dns-query     & CFSec \\
+		Cloudflare family       & 1.1.1.3           & https://family.cloudflare-dns.com/dns-query       & CFA \\
+		Quad9 standard          & 9.9.9.10          & https://dns10.quad9.net/dns-query                 & Q9S \\
+		Quad9 security          & 9.9.9.9           & https://dns9.quad9.net/dns-query                  & Q9Sec \\
+		Quad9 security_edns     & 9.9.9.11           & https://dns11.quad9.net/dns-query                & Q9EDNS \\
+		SecureDNS standard      & 146.185.167.43    & https://doh.securedns.eu/dns-query                & SDS \\
+		SecureDNS adblock       & 146.185.167.43    & https://ads-doh.securedns.eu/dns-query            & SDA \\
+		\bottomrule
+	\end{tabular}
+\caption{Compared DNS Resolvers}
+\end{table*}
+This measurements study was done from  February 2020 to 21 May 2020.  The measurements were done from 14 vantage points located in 7 countries; Malawi, Madagascar, South Africa, Kenya, Zambia, Nigeria and Uganda. This study aimed at measuring the impact of DoT and DoH on user's Quality of Experience hence the measurements were conducted at network edges. As such we used our contacts from 5 of these seven countries. These countries are (with their respective networks we measured from enclosed in brackets after the country name):  Madagascar (Widecom), Zambia (MTN, Liquid telecoms), Uganda (Airtel, Orange), Kenya (Airtel) and Nigeria (MTN). The researchers had access to two countries; Malawi (TNM, Airtel, wired Campus network) and South Africa (Vodacom, Eduroam, Campus wired network, Community network). The participants were compensated with extra Internet data bundles.
+
+ At each vantage point, we conducted two sessions of measurements; one under 4G and another under 3G. Measurements were also conducted on a wireless community network and two University campus networks (Wired and Eduroam) in South Africa. The community networks are becoming more prevalent in the region as a low-cost Internet access network managed and operated by communities to meet their communication needs \cite{Isoc2017Rep8}. The campus networks represent the well connected, higher resourced networks which we use to benchmark our results.
+
+We ran the measurements on computers running Ubuntu 18.04 desktop version. We packaged the Firefox browser in a docker container for portability. The tools ran on i5 computes with 8GB of RAM except for one PC which had 16GB RAM. 
+
+\section{Results}
+In this section, we present the results of the measurements. In total, we managed to successfuly download and save $225,062$ HTTP Archive Record (HAR) files from which we obtain and analyse the pageload times (PLT). Each successfully saved had a number of objects which we measured independently for DNS response time (DRT). This yielded $2,802,167$ unique domains which translates to $\approx 12$ domains referenced by one HAR file. We ran the test once per vantage point. We present this section in the order followed in the methodology section. We present the results using median measures visualised by boxplots. It should be noted that we introduce cut-off data points beyond the highest point. We acknowledge that this might affect results from some vantage points. 
+
+\josiah{start with a characterization of the dataset, e.g how many runs, number of records/data-points, etc}
+
+\subsection{Latency} \label{sec:latency}
+We used ICMP ping to measure latency. Each successfully saved HAR file was accompanied by 5 ping measurements to the recursive resolver and the webserver. These two measurements enable us to identify the source of bottlenecks identified in the DNS response time and page load time. It should be noted that African content is usually hosted offshore. This fact exposes two potential sources of latency; distance to the DNS resolver and distance to the webservers or Content Delivery Networks (CDNs). We note from our results, for example, that in some cases latency to recursors may be lower than the latency to a website. This may imply that the DNS response times in such instances are comprised of two parts; one for the recursor itself and the other for redirection to the web resource.
+
+Figure \ref{fig:RTT} shows latency measured from the vantage points to the recursors under 4G network. From the graph we note local DNS resolvers have the lowest RTT in some countries such as South Africa (ZA), Uganda (UG), Madagascar (MG) and Kenya (KE). We attribute this to the existence of Internet Exchange Points (IPXs) in these countries which makes peering easier. Madagascar however shows higher latency to all the other resolvers with a median RTT of $\approx 1200$ms. Nigeria shows an interesting result where Google's resolver performs better (with median RTT of about $250$ ms) than the local (MTN's) resolver which has a median RTT of $\approx748$ms. Again, we attribute this to the existence of Google Content Delivery Network (CDN) in Nigeria. Malawi and Uganda reports lowest RTT on Quad9 with Malawi having Google as the default resursor. Generally, we observe that the major DNS providers (Google. Cloudflare and Quad9) have a point of presence in Africa and mostly co-located. AdGuard and SecureDNS generally higher RTT across the vantage points. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=1.1\textwidth]{figures/PAM/RTT-by-Country}
+	\caption{Latency to resolvers [AdGuard Security (AGS), AdGuard Family (AGF), CleanBrowsing Adult (CBA), CleanBrowsing Family (CBF),CleanBrowsing Security (CBS), Cloudflare (CF), Local resolver, Google (GG), Quad9 (Q9), SecureDNS Adblock (SDA), and SecureDNS Security (SDS)] under 4G}
+	\label{fig:RTT}
+\end{figure}
+
+\subsection{DNS resolution Delay} \label{sec:DRT}
+
+DNS response time is one of the sources of delay in any online transaction which fetches resources from a remote location. A web transaction in particular comprises of multiple name resolution to web components such as images, scripts and cross site componets. In this section, we present summaries of DRTs grouped by DNS protocol and country from which the measurements were conducted. Figure \ref{fig:DRT-by-recursive} shows DRTs categorised by recursor. This graph gives an overview of how the recursors perform per DNS protocol. We observe, as expected, that Do53 have the lowest DRTs. On On DoE, DoT generally reports lower values than DoH. For expample DoH's minimum DRTs are higher than those of DoH. We further note that Cloudflare performs better across protocols with a minor median differences amongst the protocols. We noted in Figure \ref{fig:RTT} that the major DNS providers are mostly co-located. However, the DRT results show varying results. 
+
+Figure \ref{fig:top3_drt} shows CDFs for DNS timings for the major DNS recursors under 4G and campus and wired network. We observe that Cloudflare performs comparable to the local resolver under campus wired network. This is not surprising considering that these results are from a single vantage point whose default resolver is cloudflare. This implies that the network is benefiting from caching. We note that Google's DoH and Quad9's DoT report higher timings across network conditions. This concurs with previous studies by Hounsel \textit{et. al} \cite{DoTandDoH2} and []. These works reported that these providers differ in the implementation of DoE. Quad9 DoT performs more poorly with $\approx 70\%$ of the transactions over $1000$ms. In general we find that DoE gets more negatively impacted with deminishing network conditions with DoH showing a more noticeable impact than DoT. Under better network conditions, DoH performs better than DoT, and in some instances, better than Do53.
+
+
+
+\begin{figure}[t!]
+	%\centering
+	\includegraphics[width=\linewidth]{figures/PAM/Recursive-dns_type_vs_DRT}
+	\caption{DNS response time of DNS protocols (Do53, DoT, DoH) under 4G network}
+	\label{fig:DRT-by-recursive}
+\end{figure}
+
+\begin{figure*}[t!]
+	%\centering
+	\begin{subfigure}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{figures/dns_timings_top3_4G_cdf}
+		\caption{DNS response time for default Do53 vs DoT and DoH for Google, Cloudflare and Quad9 under 4G}
+		\label{fig:top3_4G}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{figures/dns_timings_top3_Wired_cdf}
+		\caption{DNS response time for default Do53 vs DoT and DoH for Google, Cloudflare and Quad9 under Campus Wired Network}
+		\label{fig:top3_wired}
+	\end{subfigure}
+	\caption{DNS timings for Google, Cloudflare and Quad9 under 4G and Campus network}
+	\label{fig:top3_drt}
+\end{figure*}
+
+
+\begin{figure*}[t!]
+	%\centering
+	\includegraphics[width=\linewidth]{figures/PAM/DRT-by-Country}
+	\caption{DNS response time of different resolvers under 4G network}
+	\label{fig:DRT-by-country}
+\end{figure*}
+
+
+\subsection{Page Load Times (PLT)} \label{sec:PLT}
+
+\begin{figure*}[t!]
+	%\centering
+	\includegraphics[width=\linewidth]{figures/pageload_PLT_4G_cdf}
+	\caption{Pageload differences under 4G for Google, Cloudflare and Quad9}
+	\label{fig:4G_PLT}
+\end{figure*}
+
+\subsection{Failure rates} \label{sec:failure-rates}
+
+To further understand the impact of DNS recursor and protocol choice on Quality of Experience, we endavoured to calculate the success and failure rates for all the recursors and protocols we measure in this study. This is especially important to inform users on the     Table shows the success and failure rates for the page loads. It also presents error types we encountered during our measurements. Generally, Do53 had higher success rates compared to DoT and DoH under both 4G and 3G in all the three continents. DoH has the lowest success rate on both 3G and 4G when resolving websites hosted in all the three continents. The worst DoH success rate is observed when resolving websites hosted in Europe on 3G with $24\%$ success rate and $43\%$ DNS error rate. The highest percentage of errors across the network types were observed with DoH configuration. Most of these errors were DNS related. During our measurements, we noted some unknown errors denoted in the Table \ref{tab:failure_rates} as \textit{Other Errors}. 
+
+We noted that the \textit{0ther Errors} are quite high compared to \textit{Selenium} and \textit{Pageload timeout}. This prompted us to look into what might be these errors which included \textit{refused}, \textit{DoT stub errors} and \textit{nss} errors.
+
+We observe that the success or failure rates depend on the network conditions; the better the network conditions (bandwidth, delay), the higher the success rate and vice versa. These observations further indicate that the success of connection depends on the user's choice of DNS protocol and network condition. 
+
+\subsection{Page Load Times (PLT)} \label{sec:PLT}
+
+\section{Discussion}
+\enock{highlight peculiar results and provide insights, peering, suboptimal routing, cache sharing}
+\josiah{how important is DNS resolution time? is it possible to simulate QoE impact plt/drt. possibly link this to prior research on qoe}
+
+
+
+
+\section{Related Work}
+
+Studies have pointed out that Security mechanisms negatively impact Quality of Service. Due to the multi-attribute nature of security, different researchers have focused on measuring the impact of specific security mechanisms on QoS and Quality of Experience (QoE). Given the recency of DoT and DoH, the research community is yet to establish the real performance cost of these protocols. At the writing of this paper, we know very few measurement studies works on the cost of DoT and DoH on performance. An early preliminary study by Mozilla \footnote{See https://blog.nightly.mozilla.org/2018/08/28/firefox-nightly-secure-dns-experimental-results} found that DoH lookups are only marginally slower than conventional, unencrypted DNS over port 53 (Do53). Bottger \textit{et all} \cite{DoTandDoH2} study the DoH ecosystem to understand cost of the additional DNS security. Their findings indicate that the impact is marginal and does not heavily impact the page load times. Lu, \textit{et al} \cite{DoE} conducted end-to-end DNS-over-Encryption measurements and found that that generally, the service quality of DNS-over-Encryption is satisfying, in terms of accessibility and latency and that the added latency is worth it. Secure DNS  is attracting the attention of the research community due to its current centralised implementation. Some of the users are afraid to entrust their valuable browsing information to a few providers. As such, some works are focusing on de-centralising DoH so that no one provider has all the browsing information. Phong, \textit{et al.} \cite{K-resolver} propose K-resolver to slice user information to different decentralised DoH resolvers. This, however, suffers latency when the servers are geographically separated. A similar study is conducted by Hounsel, \textit{et al} \cite{D-DNS}. This study proposes a distributed DoH server architecture called M-DNS. 
+
+\section{Conclusion and future work}
+
+%\section{Appendices}
+
+
+
+%%
+%% The acknowledgements section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+%\begin{acks}
+
+%\end{acks}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+
+\bibliographystyle{naturemag}
+\bibliography{refs}
+
+%%
+%% If your work has an appendix, this is the place to put it.
+%\appendix
+
+%\section{Appendix A}
+
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigconf.tex'.
+
+
